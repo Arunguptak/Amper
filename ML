@@ -1,0 +1,130 @@
+Problem Outline
+Identify the most correct model out the five provided models and based on the provided state examples. Include any graphs or code used in making this determination.
+
+a. Explain why the other models do not perform as well as the model you selected as the most correct model.
+
+Assume the model you selected as correct in Problem 1 as the source of truth, write a scoring function to assess the accuracy of the other four models against the correct model. Explain why you chose the method you did.
+Assuming you can only select a contiguous 2 hour segment from the 24 hour segment from Problem 1: select one 2 hour segment such that it would best distinguish between all of the other incorrect models. Explain your reasoning.
+
+a. Hint: you can use the accuracy function you introduced in Problem 2.
+# the following functions are stubs that you may or may not use to help you in the above tasks
+
+# Load the raw data using the ExcelFile object
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.model_selection import train_test_split
+import pandas as pd
+import time
+
+# Read the input csv file
+MODEL_1 = pd.read_csv("C:/amper/AmperDataChallengeV2/AmperDataChallengeV2/MODEL_1.csv")
+MODEL_2 = pd.read_csv("C:/amper/AmperDataChallengeV2/AmperDataChallengeV2/MODEL_1.csv")
+MODEL_3 = pd.read_csv("C:/amper/AmperDataChallengeV2/AmperDataChallengeV2/MODEL_1.csv")
+MODEL_4 = pd.read_csv("C:/amper/AmperDataChallengeV2/AmperDataChallengeV2/MODEL_1.csv")
+MODEL_5 = pd.read_csv("C:/amper/AmperDataChallengeV2/AmperDataChallengeV2/MODEL_1.csv")
+MODEL_1=pd.read_csv("C:/amper/AmperDataChallengeV2/AmperDataChallengeV2/MODEL_5.csv")
+df = pd.DataFrame(MODEL_1, columns = ['Epochs', 'Amps', 'States']) 
+# Generate result using pandas 
+resultdate = [] 
+resultamp = [] 
+resultclass = [] 
+for x in df["Epochs"]: 
+            data=time.strftime("%b %d %Y", time.gmtime(x))
+            resultdate.append(data)
+for a in df["Amps"]:
+         amp=round(a)
+         resultamp.append(amp)
+
+for value in df["States"]: 
+    if value =="Production": 
+        resultclass.append("1") 
+       
+    else: 
+        resultclass.append("0") 
+df["Class"] = resultclass                          
+df["Date"] = resultdate  
+df["Amp"] = resultamp 
+print(df) 
+import matplotlib.pyplot as plt
+# create a figure and axis
+fig, ax = plt.subplots()
+
+# scatter the date against the Amp
+ax.scatter(df['States'], df['Amp'])
+# set a title and labels
+ax.set_title('Machine 1')
+ax.set_xlabel('States')
+ax.set_ylabel('Amp')
+from matplotlib import pyplot as plt
+from matplotlib import style
+import numpy as np
+style.use('ggplot')
+plt.plot(df['Date'], df['Amp'])
+plt.title('Machine 1')
+plt.ylabel('Amps')
+plt.xlabel('Date')
+plt.show()
+x = df['Date']
+y = df['Amp']
+plt.plot(x, y, color='blue', lw=4, alpha=0.5)
+plt.scatter(x, y, marker='o', s=400, color='red',alpha=0.5)
+plt.bar(x, y, color='green',alpha=0.5)
+# compare algorithms
+from pandas import read_csv
+from matplotlib import pyplot
+from sklearn.model_selection import train_test_split
+from sklearn.model_selection import cross_val_score
+from sklearn.model_selection import StratifiedKFold
+from sklearn.linear_model import LogisticRegression
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
+from sklearn.naive_bayes import GaussianNB
+from sklearn.svm import SVC
+# summarize the data
+from pandas import read_csv
+# Load dataset
+url = "C:/amper/AmperDataChallengeV2/AmperDataChallengeV2/MODEL_1.csv"
+names = ['Amps', 'States']
+dataset = read_csv(url, names=names)
+# shape
+print(dataset.shape)
+# head
+print(dataset.head(20))
+# descriptions
+print(dataset.describe())
+# class distribution
+print(dataset.groupby('States').size())
+# Split-out validation dataset
+array = dataset.values
+X = array[:,0:1]
+y = array[:,1]
+X_train, X_validation, Y_train, Y_validation = train_test_split(X, y, test_size=0.5, random_state=0)
+# Spot Check Algorithms
+# Select Best Model
+models = []
+models.append(('LR', LogisticRegression(solver='liblinear', multi_class='ovr')))
+models.append(('LDA', LinearDiscriminantAnalysis()))
+models.append(('KNN', KNeighborsClassifier()))
+models.append(('CART', DecisionTreeClassifier()))
+models.append(('NB', GaussianNB()))
+models.append(('SVM', SVC(gamma='auto')))
+# evaluate each model in turn
+results = []
+names = []
+for name, model in models:
+	kfold = StratifiedKFold(n_splits=5, random_state=1, shuffle=True)
+	cv_results = cross_val_score(model, X_train, Y_train, cv=kfold, scoring='accuracy')
+	results.append(cv_results)
+	names.append(name)
+	print('%s: %f (%f)' % (name, cv_results.mean(), cv_results.std()))
+output:
+LR: 0.928455 (0.002297)
+LDA: 0.811304 (0.003473)
+KNN: 0.939345 (0.002405)
+CART: 0.940523 (0.001126)
+NB: 0.934705 (0.002251)
+SVM: 0.938071 (0.002145)
+# Compare Algorithms
+pyplot.boxplot(results, labels=names)
+pyplot.title('Algorithm Comparison')
+pyplot.show()
